@@ -8,6 +8,7 @@ import Button from "../Button";
 import Text from "../Text";
 import IconButton from "../IconButton";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons"; // Asegúrate de tener esta importación
 
 const RegisterScreen: React.FC = () => {
   const [fullName, setFullName] = useState("");
@@ -25,6 +26,11 @@ const RegisterScreen: React.FC = () => {
       password,
       address,
     });
+  };
+
+  const handleGoogleLogin = () => {
+    // Lógica para inicio de sesión con Google
+    console.log("Iniciar sesión con Google");
   };
 
   const handleBack = () => {
@@ -47,7 +53,6 @@ const RegisterScreen: React.FC = () => {
   return (
     <Form style={styles.form}>
       <FormHeader>
-        {/* Aquí ponemos un contenedor horizontal para ícono + texto */}
         <View style={styles.headerRow}>
           <IconButton icon="arrow-left" onPress={handleBack} style={styles.iconButton} />
           <Text style={styles.headerTitle}>Crear cuenta</Text>
@@ -61,6 +66,22 @@ const RegisterScreen: React.FC = () => {
           style={styles.registerButton}
           labelStyle={styles.registerButtonText}
         />
+
+        <View style={styles.dividerContainer}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>o</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <TouchableOpacity
+          style={styles.googleButton}
+          onPress={handleGoogleLogin}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="logo-google" size={20} color="#DB4437" />
+          <Text style={styles.googleButtonText}>Continuar con Google</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={handleBack} style={styles.loginOptionContainer}>
           <Text style={styles.backToLogin}>¿Ya tienes una cuenta? Inicia sesión</Text>
         </TouchableOpacity>
@@ -111,7 +132,38 @@ const styles = StyleSheet.create({
     marginTop: 8,
     alignItems: "center",
   },
+  googleButton: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    paddingVertical: 12,
+    marginTop: 16,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
+  },
+  googleButtonText: {
+    color: "#000000",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#DDDDDD",
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: "#888888",
+    fontSize: 14,
+  },
 });
 
 export default RegisterScreen;
-

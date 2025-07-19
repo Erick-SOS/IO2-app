@@ -18,8 +18,8 @@ import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
 
 const LoginScreen: React.FC = () => {
-  const [email, setEmail] = useState("correo")
-  const [password, setPassword] = useState("contraseña")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [secureTextEntry, setSecureTextEntry] = useState(true)
   const [loading, setLoading] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
@@ -27,23 +27,27 @@ const LoginScreen: React.FC = () => {
   const colors = getThemeColors(theme)
 
   const handleLogin = async () => {
-  if (!email || !password) {
-    Alert.alert("Error", "Todos los campos son obligatorios", [{ text: "OK" }])
-    return
+    if (!email || !password) {
+      Alert.alert("Error", "Todos los campos son obligatorios", [{ text: "OK" }])
+      return
+    }
+
+    setLoading(true)
+    try {
+      console.log("Correo:", email)
+      console.log("Contraseña:", password)
+      router.push("/home");
+    } catch (error: any) {
+      Alert.alert("Error", "Ocurrió un error al procesar los datos", [{ text: "OK" }])
+    } finally {
+      setLoading(false)
+    }
   }
 
-  setLoading(true)
-  try {
-    console.log("Correo:", email)
-    console.log("Contraseña:", password)
-    router.push("/home");
-  } catch (error: any) {
-    Alert.alert("Error", "Ocurrió un error al procesar los datos", [{ text: "OK" }])
-  } finally {
-    setLoading(false)
+  const handleGoogleLogin = () => {
+    // Lógica para inicio de sesión con Google
+    console.log("Iniciar sesión con Google")
   }
-}
-
 
   const goToRegister = () => {
     router.push("/(auth)/register")
@@ -152,11 +156,49 @@ const LoginScreen: React.FC = () => {
       fontWeight: "700",
       textAlign: "center",
     },
+    googleButton: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: 16,
+      paddingVertical: 16,
+      marginBottom: 16,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 6,
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    googleButtonText: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: "700",
+      textAlign: "center",
+      marginLeft: 10,
+    },
     registerText: {
       textAlign: "center",
       color: colors.primary,
       textDecorationLine: "underline",
       marginTop: 8,
+      fontSize: 14,
+    },
+    dividerContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginVertical: 20,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    dividerText: {
+      marginHorizontal: 10,
+      color: colors.secondaryText,
       fontSize: 14,
     },
   })
@@ -237,6 +279,25 @@ const LoginScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <Text style={dynamicStyles.loginButtonText}>{loading ? "Procesando..." : "Ingresar"}</Text>
+          </TouchableOpacity>
+
+          <View style={dynamicStyles.dividerContainer}>
+            <View style={dynamicStyles.dividerLine} />
+            <Text style={dynamicStyles.dividerText}>o</Text>
+            <View style={dynamicStyles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={dynamicStyles.googleButton}
+            onPress={handleGoogleLogin}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            <Image 
+              source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" }} 
+              style={{ width: 20, height: 20 }}
+            />
+            <Text style={dynamicStyles.googleButtonText}>Continuar con Google</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={goToRegister}>
