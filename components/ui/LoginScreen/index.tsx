@@ -16,6 +16,9 @@ import { useTheme } from "@/components/ui/ThemeContext"
 import { getThemeColors } from "@/components/theme"
 import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
+import { loginUser } from "../../../firebase/firebaseServices";
+import { useUser } from "@/context/UserContext";
+import FloatingLabelInput from "../FloatingLabelInput";
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState("")
@@ -25,32 +28,43 @@ const LoginScreen: React.FC = () => {
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const { theme } = useTheme()
   const colors = getThemeColors(theme)
+  const { setUser } = useUser();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Todos los campos son obligatorios", [{ text: "OK" }])
-      return
+      Alert.alert("Error", "Todos los campos son obligatorios", [{ text: "OK" }]);
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
+
     try {
-      console.log("Correo:", email)
-      console.log("Contraseña:", password)
-      router.push("/home");
+      const result = await loginUser(email, password);
+
+      if (result.success && result.user) {
+        const user = result.user;
+        setUser(user);
+        router.push("/home");
+      } else {
+        const errorMessage =
+          result.error instanceof Error
+            ? result.error.message
+            : String(result.error);
+        Alert.alert("Error", "Credenciales inválidas: " + errorMessage, [{ text: "OK" }]);
+      }
     } catch (error: any) {
-      Alert.alert("Error", "Ocurrió un error al procesar los datos", [{ text: "OK" }])
+      Alert.alert("Error inesperado", error.message || String(error), [{ text: "OK" }]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleLogin = () => {
-    // Lógica para inicio de sesión con Google
-    console.log("Iniciar sesión con Google")
+    console.log("Iniciar sesión con Google");
   }
 
   const goToRegister = () => {
-    router.push("/(auth)/register")
+    router.push("/(auth)/register");
   }
 
   const dynamicStyles = StyleSheet.create({
@@ -309,4 +323,4 @@ const LoginScreen: React.FC = () => {
   )
 }
 
-export default LoginScreen
+export default LoginScreen;

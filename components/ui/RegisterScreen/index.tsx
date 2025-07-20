@@ -8,7 +8,9 @@ import Button from "../Button";
 import Text from "../Text";
 import IconButton from "../IconButton";
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // Asegúrate de tener esta importación
+import { registerUser } from "../../../firebase/firebaseServices";
+import { images } from "../../../assets/images";
+import { Image } from "react-native";
 
 const RegisterScreen: React.FC = () => {
   const [fullName, setFullName] = useState("");
@@ -18,14 +20,34 @@ const RegisterScreen: React.FC = () => {
   const [address, setAddress] = useState("");
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
-  const handleRegister = () => {
-    console.log("Datos ingresados:", {
-      fullName,
-      phoneNumber,
-      email,
-      password,
-      address,
-    });
+  const handleRegister = async () => {
+    if (!fullName || !phoneNumber || !email || !password || !address) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    try {
+      const result = await registerUser({
+        nombre: fullName,
+        correo: email,
+        contraseña: password,
+        celular: parseInt(phoneNumber),
+        direccion: address,
+      });
+
+      if (result.success) {
+        alert("Registro exitoso");
+        router.push("/(auth)/login");
+      } else {
+        const errorMessage =
+          result.error instanceof Error
+            ? result.error.message
+            : "Ocurrió un error desconocido.";
+        alert("Error al registrarse: " + errorMessage);
+      }
+    } catch (error) {
+      alert("Error inesperado: " + error);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -74,11 +96,14 @@ const RegisterScreen: React.FC = () => {
         </View>
 
         <TouchableOpacity
-          style={styles.googleButton}
-          onPress={handleGoogleLogin}
-          activeOpacity={0.8}
+            style={styles.googleButton}
+            onPress={handleGoogleLogin}
+            activeOpacity={0.8}
         >
-          <Ionicons name="logo-google" size={20} color="#DB4437" />
+          <Image 
+            source={images.google_logo} 
+            style={{ width: 30, height: 30 }}
+          />
           <Text style={styles.googleButtonText}>Continuar con Google</Text>
         </TouchableOpacity>
 

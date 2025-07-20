@@ -1,6 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Alert,
+  Linking,
+} from "react-native";
 import Modal from "react-native-modal";
+import { saveOrder } from "../../../firebase/firebaseServices";
 
 interface CartItem {
   id: string;
@@ -17,7 +26,6 @@ interface Props {
   onDecrease: (id: string) => void;
   total: number;
   userAddress: string;
-  onOrder: () => void;
   onClearCart: () => void;
 }
 
@@ -29,9 +37,51 @@ const Cart: React.FC<Props> = ({
   onDecrease,
   total,
   userAddress,
-  onOrder,
-  onClearCart
+  onClearCart,
 }) => {
+  const handleOrder = async () => {
+    if (items.length === 0) {
+      Alert.alert("Carrito vacío", "Agrega productos antes de hacer un pedido.");
+      return;
+    }
+
+    const productosStr = items
+      .map((item) => `${item.quantity} x ${item.name} (Bs. ${item.price.toFixed(2)})`)
+      .join(", ");
+
+    try {
+      const response = await saveOrder({
+        monto: total,
+        productos: productosStr,
+      });
+
+      if (response.success) {
+        const message = `Hola, quiero hacer un pedido:\n📦 ${productosStr}\n🏠 Dirección: ${userAddress}\n💵 Total: Bs. ${total.toFixed(2)}`;
+        const phoneNumber = "59165371410";
+        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+        Linking.openURL(whatsappURL);
+
+        Alert.alert("Pedido realizado", "Compra guardada correctamente");
+        onClearCart();
+        onClose();
+      } else {
+        Alert.alert("Error", "No se pudo guardar la compra: " + getErrorMessage(response.error));
+      }
+    } catch (error: any) {
+      Alert.alert("Error inesperado", error.message || String(error));
+    }
+  };
+
+  function getErrorMessage(error: unknown): string {
+    if (!error) return "Error desconocido";
+    if (typeof error === "string") return error;
+    if (typeof error === "object" && error !== null && "message" in error) {
+      return (error as any).message;
+    }
+    return "Error desconocido";
+  }
+
   return (
     <Modal
       isVisible={visible}
@@ -42,14 +92,15 @@ const Cart: React.FC<Props> = ({
       useNativeDriver
       hideModalContentWhileAnimating
     >
-    
       <View style={styles.container}>
         <Text style={styles.address}>Dirección: {userAddress}</Text>
+
         <TouchableOpacity onPress={onClose} style={styles.backButton}>
-            <Text style={styles.backButtonText}>ATRAS</Text>
+          <Text style={styles.backButtonText}>ATRAS</Text>
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.clearButton} onPress={onClearCart}>
-            <Text style={styles.clearButtonText}>Vaciar carrito</Text>
+          <Text style={styles.clearButtonText}>Vaciar carrito</Text>
         </TouchableOpacity>
 
         <FlatList
@@ -82,7 +133,7 @@ const Cart: React.FC<Props> = ({
           Todos los productos se pagan en efectivo al momento de la entrega
         </Text>
 
-        <TouchableOpacity style={styles.orderButton} onPress={onOrder}>
+        <TouchableOpacity style={styles.orderButton} onPress={handleOrder}>
           <Text style={styles.orderButtonText}>Pedir</Text>
         </TouchableOpacity>
       </View>
