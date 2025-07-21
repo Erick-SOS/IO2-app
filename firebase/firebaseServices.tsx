@@ -21,13 +21,7 @@ import { initializeAuth } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyALBUJPgMuvak1g4rkjYp8QYiTecqRctdA",
-  authDomain: "conexia-400921.firebaseapp.com",
-  projectId: "conexia-400921",
-  storageBucket: "conexia-400921.appspot.com",
-  messagingSenderId: "8766145957",
-  appId: "1:8766145957:web:6173a73108a04f5bf2d44c",
-  measurementId: "G-01W8LVQS3D",
+  
 };
 
 const app = initializeApp(firebaseConfig);
