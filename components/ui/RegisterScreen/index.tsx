@@ -8,6 +8,9 @@ import Button from "../Button";
 import Text from "../Text";
 import IconButton from "../IconButton";
 import { router } from "expo-router";
+import { registerUser } from "../../../firebase/firebaseServices";
+import { images } from "../../../assets/images";
+import { Image } from "react-native";
 
 const RegisterScreen: React.FC = () => {
   const [fullName, setFullName] = useState("");
@@ -17,14 +20,39 @@ const RegisterScreen: React.FC = () => {
   const [address, setAddress] = useState("");
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
-  const handleRegister = () => {
-    console.log("Datos ingresados:", {
-      fullName,
-      phoneNumber,
-      email,
-      password,
-      address,
-    });
+  const handleRegister = async () => {
+    if (!fullName || !phoneNumber || !email || !password || !address) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    try {
+      const result = await registerUser({
+        nombre: fullName,
+        correo: email,
+        contraseña: password,
+        celular: parseInt(phoneNumber),
+        direccion: address,
+      });
+
+      if (result.success) {
+        alert("Registro exitoso");
+        router.push("/(auth)/login");
+      } else {
+        const errorMessage =
+          result.error instanceof Error
+            ? result.error.message
+            : "Ocurrió un error desconocido.";
+        alert("Error al registrarse: " + errorMessage);
+      }
+    } catch (error) {
+      alert("Error inesperado: " + error);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    // Lógica para inicio de sesión con Google
+    console.log("Iniciar sesión con Google");
   };
 
   const handleBack = () => {
@@ -47,7 +75,6 @@ const RegisterScreen: React.FC = () => {
   return (
     <Form style={styles.form}>
       <FormHeader>
-        {/* Aquí ponemos un contenedor horizontal para ícono + texto */}
         <View style={styles.headerRow}>
           <IconButton icon="arrow-left" onPress={handleBack} style={styles.iconButton} />
           <Text style={styles.headerTitle}>Crear cuenta</Text>
@@ -61,6 +88,25 @@ const RegisterScreen: React.FC = () => {
           style={styles.registerButton}
           labelStyle={styles.registerButtonText}
         />
+
+        <View style={styles.dividerContainer}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>o</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <TouchableOpacity
+            style={styles.googleButton}
+            onPress={handleGoogleLogin}
+            activeOpacity={0.8}
+        >
+          <Image 
+            source={images.google_logo} 
+            style={{ width: 30, height: 30 }}
+          />
+          <Text style={styles.googleButtonText}>Continuar con Google</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={handleBack} style={styles.loginOptionContainer}>
           <Text style={styles.backToLogin}>¿Ya tienes una cuenta? Inicia sesión</Text>
         </TouchableOpacity>
@@ -111,7 +157,38 @@ const styles = StyleSheet.create({
     marginTop: 8,
     alignItems: "center",
   },
+  googleButton: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    paddingVertical: 12,
+    marginTop: 16,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
+  },
+  googleButtonText: {
+    color: "#000000",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#DDDDDD",
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: "#888888",
+    fontSize: 14,
+  },
 });
 
 export default RegisterScreen;
-

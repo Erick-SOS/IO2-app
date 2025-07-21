@@ -1,40 +1,71 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import Card from "./Card";
+import { images } from "../../assets/images";
 
-const CardGrid: React.FC = () => {
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: any;
+  unit: string;
+}
+
+interface CardGridProps {
+  onProductPress: (product: Product) => void;
+}
+
+const products: Product[] = [
+  {
+    id: "1",
+    name: "Frituras de oca 15gr",
+    price: 2,
+    image: images.oca15,
+    unit: "1 unidad",
+  },
+  {
+    id: "2",
+    name: "Frituras de oca 30gr",
+    price: 4,
+    image: images.oca30,
+    unit: "1 unidad",
+  },
+  {
+    id: "3",
+    name: "Frituras de camote 15gr",
+    price: 2,
+    image: images.oca15,
+    unit: "4 unidades",
+  },
+  {
+    id: "4",
+    name: "Frituras de camote 30gr",
+    price: 4,
+    image: images.oca30,
+    unit: "combo",
+  },
+];
+
+const CardGrid: React.FC<CardGridProps> = ({ onProductPress }) => {
+  const handlePress = (product: Product) => () => onProductPress(product);
+
   return (
     <View style={styles.container}>
-      <Card
-        title="Producto"
-        description="1 unidad"
-        image="https://via.placeholder.com/50"
-      />
-      <Card
-        title="Producto"
-        description="4 unidades"
-        image="https://via.placeholder.com/50"
-      />
-      <Card
-        title="Producto"
-        description="combo"
-        image="https://via.placeholder.com/50"
-      />
-      <Card
-        title="Nuestra sucursal"
-        description="combo"
-        image="https://via.placeholder.com/50"
-      />
-      <Card
-        title="social"
-        description="redes-sociales"
-        image="https://via.placeholder.com/50"
-      />
-      <Card
-        title="sobre nosotros"
-        description="combo"
-        image="https://via.placeholder.com/50"
-      />
+      {products.map((product) => (
+        <TouchableOpacity
+          key={product.id}
+          onPress={handlePress(product)}
+          activeOpacity={0.8}
+          style={styles.cardWrapper}
+        >
+          <Card
+            image={product.image}
+            price={`Bs. ${product.price.toFixed(2)}`}
+            name={product.name}
+            unit={product.unit}
+          />
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };
@@ -44,7 +75,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
+    gap: 16,
+  },
+  cardWrapper: {
+    width: "47%",
   },
 });
 

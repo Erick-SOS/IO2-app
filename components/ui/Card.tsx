@@ -1,47 +1,55 @@
 import React from "react";
-import { View, StyleSheet, Image, Text } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 
 interface CardProps {
-  title: string;
-  description: string;
-  image: string;
+  image: any;
+  price: string;
+  name: string;
+  unit: string;
 }
 
-const Card: React.FC<CardProps> = ({ title, description, image }) => {
+const Card: React.FC<CardProps> = ({ image, price, name, unit }) => {
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: image }} style={styles.image} />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
+    <View style={styles.card}>
+      <Image source={image} style={styles.image} resizeMode="cover" />
+      <Text style={styles.price}>{price}</Text>
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.unit}>{unit}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: "45%",
-    padding: 16,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    alignItems: "center",
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    overflow: "hidden",
     marginBottom: 16,
     elevation: 2,
-    
+    paddingBottom: 8,
+    alignItems: "center",
   },
   image: {
-    width: 50,
-    height: 50,
-    marginBottom: 8,
+    width: "100%",
+    height: 120,
   },
-  title: {
+  price: {
     fontSize: 16,
     fontWeight: "bold",
-    textAlign: "center",
+    marginTop: 6,
+    color: "#A0522D",
   },
-  description: {
+  name: {
     fontSize: 14,
+    fontWeight: "600",
+    marginTop: 4,
     textAlign: "center",
+    color: "#333",
+  },
+  unit: {
+    fontSize: 12,
     color: "#666",
+    marginTop: 2,
   },
 });
 
