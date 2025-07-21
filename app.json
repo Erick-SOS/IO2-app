@@ -29,8 +29,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "a2e0ffc0-26cf-4d2a-bb26-704c60479994"
+        "projectId": "46eb8abf-bed2-4d79-b350-aa1b10bdf98a"
       }
-    }
+    },
+    "owner": "erick-sos"
   }
 }
