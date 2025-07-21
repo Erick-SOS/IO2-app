@@ -27,11 +27,15 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "owner": "erick-sos",
+    "plugins": [
+      "expo-router"
+    ],
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "46eb8abf-bed2-4d79-b350-aa1b10bdf98a"
+        "projectId": "85d3a820-39cc-4ab8-9118-efca3ae41728"
       }
-    },
-    "owner": "erick-sos"
+    }
   }
 }
