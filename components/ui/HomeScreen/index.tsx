@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import CardGrid from "../CardGrig";
+import CardGrid from "../CardGrid";
 import Cart from "../Cart";
 import ModalBottomSheet from "../ModalBottomSheet";
 import { images } from "../../../assets/images";

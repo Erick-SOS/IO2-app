@@ -28,7 +28,7 @@ interface Props {
   total: number;
   userAddress: string;
   onClearCart: () => void;
-  onOrder: (items: CartItem[], total: number, note: string) => void;
+  onOrder: () => void;
 }
 
 const Cart: React.FC<Props> = ({
