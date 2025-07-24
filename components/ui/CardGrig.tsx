@@ -35,14 +35,14 @@ const products: Product[] = [
     name: "Frituras de camote 15gr",
     price: 2,
     image: images.oca15,
-    unit: "4 unidades",
+    unit: "1 unidad",
   },
   {
     id: "4",
     name: "Frituras de camote 30gr",
     price: 4,
     image: images.oca30,
-    unit: "combo",
+    unit: "1 unidad",
   },
 ];
 

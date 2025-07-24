@@ -14,9 +14,9 @@ import Cart from "../Cart";
 import ModalBottomSheet from "../ModalBottomSheet";
 import { images } from "../../../assets/images";
 import Text from "../Text";
-import Card from "../Card";
 import { useUser } from "@/context/UserContext";
 import { router } from "expo-router";
+import CardSocial from "../CardSocial";
 
 const HomeScreen: React.FC = () => {
   const { user } = useUser();
@@ -121,8 +121,16 @@ const HomeScreen: React.FC = () => {
     Alert.alert("¡Gracias por tu compra!", "Se ha enviado tu pedido al equipo de ventas.");
   };
 
-  const handleOpenSocialLink = () => {
-    Linking.openURL("https://linktr.ee/ANDIKOCHIPS");
+  const handleOpenSocialLinkInstagram = () => {
+    Linking.openURL("https://www.instagram.com/andiko_chips/#");
+  };
+
+  const handleOpenSocialLinkTikTok = () => {
+    Linking.openURL("https://www.tiktok.com/@andiko_chips");
+  };
+
+  const handleOpenSocialLinkFacebook = () => {
+    Linking.openURL("https://www.facebook.com/share/1B8PvCsA46/");
   };
 
   return (
@@ -164,12 +172,13 @@ const HomeScreen: React.FC = () => {
 
         <CardGrid onProductPress={handleProductPress} />
 
-        <Text style={styles.sectionTitle}>Sobre nosotros</Text>
-        <View style={styles.aboutContainer}>
-          <TouchableOpacity onPress={handleOpenSocialLink} style={styles.cardWrapper}>
-            <Card name="Síguenos en Instagram, TikTok y Facebook" image={images.Logo} price="" unit="" />
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.sectionTitle}>Nuestras redes sociales</Text>
+        
+        <CardSocial platform="Instagram" onPress={handleOpenSocialLinkInstagram} />
+        <CardSocial platform="TikTok" onPress={handleOpenSocialLinkTikTok} />
+        <CardSocial platform="Facebook" onPress={handleOpenSocialLinkFacebook} />
+
+
       </ScrollView>
 
       <Cart

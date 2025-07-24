@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   FlatList,
   Alert,
   Linking,
+  TextInput,
 } from "react-native";
 import Modal from "react-native-modal";
 import { saveOrder } from "../../../firebase/firebaseServices";
@@ -27,6 +28,7 @@ interface Props {
   total: number;
   userAddress: string;
   onClearCart: () => void;
+  onOrder: (items: CartItem[], total: number, note: string) => void;
 }
 
 const Cart: React.FC<Props> = ({
@@ -39,6 +41,8 @@ const Cart: React.FC<Props> = ({
   userAddress,
   onClearCart,
 }) => {
+  const [userNote, setUserNote] = useState("");
+
   const handleOrder = async () => {
     if (items.length === 0) {
       Alert.alert("Carrito vacío", "Agrega productos antes de hacer un pedido.");
@@ -56,7 +60,7 @@ const Cart: React.FC<Props> = ({
       });
 
       if (response.success) {
-        const message = `Hola, quiero hacer un pedido:\n📦 ${productosStr}\n🏠 Dirección: ${userAddress}\n💵 Total: Bs. ${total.toFixed(2)}`;
+        const message = `Hola, quiero hacer un pedido:\n📦 ${productosStr}\n🏠 Dirección: ${userAddress}\n📝 Nota: ${userNote || "Ninguna"}\n💵 Total: Bs. ${total.toFixed(2)}`;
         const phoneNumber = "59165371410";
         const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
@@ -64,6 +68,7 @@ const Cart: React.FC<Props> = ({
 
         Alert.alert("Pedido realizado", "Compra guardada correctamente");
         onClearCart();
+        setUserNote(""); // limpiar nota
         onClose();
       } else {
         Alert.alert("Error", "No se pudo guardar la compra: " + getErrorMessage(response.error));
@@ -95,13 +100,15 @@ const Cart: React.FC<Props> = ({
       <View style={styles.container}>
         <Text style={styles.address}>Dirección: {userAddress}</Text>
 
-        <TouchableOpacity onPress={onClose} style={styles.backButton}>
-          <Text style={styles.backButtonText}>ATRAS</Text>
-        </TouchableOpacity>
+        <View style={styles.topButtons}>
+          <TouchableOpacity onPress={onClose} style={styles.backButton}>
+            <Text style={styles.backButtonText}>ATRÁS</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.clearButton} onPress={onClearCart}>
-          <Text style={styles.clearButtonText}>Vaciar carrito</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.clearButton} onPress={onClearCart}>
+            <Text style={styles.clearButtonText}>Vaciar carrito</Text>
+          </TouchableOpacity>
+        </View>
 
         <FlatList
           data={items}
@@ -130,8 +137,16 @@ const Cart: React.FC<Props> = ({
 
         <Text style={styles.total}>Total: Bs. {total.toFixed(2)}</Text>
         <Text style={styles.note}>
-          Todos los productos se pagan en efectivo al momento de la entrega
+          Pagos en efectivo al momento de la entrega o por QR a través de WhatsApp
         </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Escribe una nota o instrucción..."
+          value={userNote}
+          onChangeText={setUserNote}
+          multiline
+        />
 
         <TouchableOpacity style={styles.orderButton} onPress={handleOrder}>
           <Text style={styles.orderButtonText}>Pedir</Text>
@@ -156,6 +171,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 20,
+  },
+  topButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  backButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#A0522D",
+    borderRadius: 8,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  clearButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#A0522D",
+    borderRadius: 8,
+  },
+  clearButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   itemRow: {
     flexDirection: "row",
@@ -200,8 +242,18 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     color: "#666",
   },
+  input: {
+    marginTop: 15,
+    borderWidth: 1,
+    borderColor: "#CCC",
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    minHeight: 60,
+    textAlignVertical: "top",
+  },
   orderButton: {
-    marginTop: 30,
+    marginTop: 20,
     backgroundColor: "#A0522D",
     paddingVertical: 15,
     borderRadius: 8,
@@ -210,31 +262,6 @@ const styles = StyleSheet.create({
   orderButtonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
-  },
-  backButton: {
-    alignSelf: "flex-start",
-    marginBottom: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: "#A0522D",
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  clearButton: {
-    marginTop: 20,
-    backgroundColor: "#A0522D",
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  clearButtonText: {
-    color: "#fff",
-    fontSize: 16,
     fontWeight: "bold",
   },
 });
