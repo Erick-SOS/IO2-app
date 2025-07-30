@@ -19,29 +19,15 @@ const products: Product[] = [
   {
     id: "1",
     name: "Frituras de oca 15gr",
-    price: 2,
+    price: 3,
     image: images.oca15,
     unit: "1 unidad",
   },
   {
     id: "2",
-    name: "Frituras de oca 30gr",
-    price: 4,
-    image: images.oca30,
-    unit: "1 unidad",
-  },
-  {
-    id: "3",
     name: "Frituras de camote 15gr",
-    price: 2,
-    image: images.oca15,
-    unit: "1 unidad",
-  },
-  {
-    id: "4",
-    name: "Frituras de camote 30gr",
-    price: 4,
-    image: images.oca30,
+    price: 3,
+    image: images.camote15,
     unit: "1 unidad",
   },
 ];
