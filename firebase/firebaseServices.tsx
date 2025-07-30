@@ -21,7 +21,13 @@ import { initializeAuth } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
-  
+  apiKey: "AIzaSyALBUJPgMuvak1g4rkjYp8QYiTecqRctdA",
+  authDomain: "conexia-400921.firebaseapp.com",
+  projectId: "conexia-400921",
+  storageBucket: "conexia-400921.appspot.com",
+  messagingSenderId: "8766145957",
+  appId: "1:8766145957:web:6173a73108a04f5bf2d44c",
+  measurementId: "G-01W8LVQS3D"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -50,14 +56,15 @@ export const registerUser = async ({
   direccion: string;
 }) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, correo, contraseña);
+    const normalizedEmail = correo.toLowerCase().trim();
+    const userCredential = await createUserWithEmailAndPassword(auth, normalizedEmail, contraseña);
     const uid = userCredential.user.uid;
 
-    const admin = correo === "admin@gmail.com";
+    const admin = normalizedEmail === "admin@gmail.com";
 
     await setDoc(doc(db, "usuariosIO2", uid), {
       nombre,
-      correo,
+      correo: normalizedEmail,
       celular,
       direccion,
       admin,
@@ -72,10 +79,11 @@ export const registerUser = async ({
 
 export const loginUser = async (email: string, password: string) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const normalizedEmail = email.toLowerCase().trim();
+    const userCredential = await signInWithEmailAndPassword(auth, normalizedEmail, password);
     const user = userCredential.user;
 
-    const q = query(collection(db, "usuariosIO2"), where("correo", "==", email));
+    const q = query(collection(db, "usuariosIO2"), where("correo", "==", normalizedEmail));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
@@ -120,3 +128,24 @@ export const saveOrder = async ({
   }
 };
 
+export const getSalesData = async () => {
+  try {
+    const snapshot = await getDocs(query(collection(db, "cartIO2")));
+    const data = snapshot.docs.map((doc) => {
+      const item = doc.data();
+      return {
+        id: doc.id,
+        product: item.productos || "Sin nombre",
+        total: item.monto || 0,
+        date: item.fecha?.toDate().toISOString().split("T")[0] || "Sin fecha",
+      };
+    });
+
+    data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error al obtener ventas:", error);
+    return { success: false, error };
+  }
+};

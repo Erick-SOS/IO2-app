@@ -3,9 +3,10 @@ import { View, ScrollView, Text, TouchableOpacity, StyleSheet } from "react-nati
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useUser } from "@/context/UserContext";
 import { router } from "expo-router";
+import { getSalesData } from "@/firebase/firebaseServices";
 
 type SaleEntry = {
-  id: number;
+  id: string;
   product: string;
   total: number;
   date: string;
@@ -23,24 +24,39 @@ const AdminView: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    // Simula los datos de ventas por cada filtro
-    const dummyData: { [key: string]: SaleEntry[] } = {
-      daily: [
-        { id: 1, product: "Frituras 15gr", total: 30, date: "2025-07-20" },
-        { id: 2, product: "Frituras 30gr", total: 60, date: "2025-07-20" },
-      ],
-      weekly: [
-        { id: 1, product: "Frituras 15gr", total: 210, date: "Semana 29" },
-        { id: 2, product: "Frituras 30gr", total: 300, date: "Semana 29" },
-      ],
-      monthly: [
-        { id: 1, product: "Frituras 15gr", total: 890, date: "Julio 2025" },
-        { id: 2, product: "Frituras 30gr", total: 1220, date: "Julio 2025" },
-      ],
-    };
+  const fetchData = async () => {
+    const result = await getSalesData();
 
-    setFilteredData(dummyData[filter]);
-  }, [filter]);
+    if (result.success) {
+      const allData = result.data!;
+      
+      const today = new Date();
+      let filtered: SaleEntry[] = [];
+
+      if (filter === "daily") {
+        filtered = allData.filter((item) => item.date === today.toISOString().split("T")[0]);
+      } else if (filter === "weekly") {
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+        filtered = allData.filter((item) => {
+          const d = new Date(item.date);
+          return d >= startOfWeek && d <= today;
+        });
+      } else if (filter === "monthly") {
+        filtered = allData.filter((item) => {
+          const d = new Date(item.date);
+          return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+        });
+      }
+
+      setFilteredData(filtered);
+    } else {
+      console.error("No se pudo obtener datos:", result.error);
+    }
+  };
+
+  fetchData();
+}, [filter]);
 
   if (!user || !user.admin) return null;
 

@@ -22,7 +22,7 @@ const Card: React.FC<CardProps> = ({ image, price, name, unit }) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 20,
     overflow: "hidden",
     marginBottom: 16,
     elevation: 2,
